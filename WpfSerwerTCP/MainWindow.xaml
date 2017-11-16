@@ -1,0 +1,19 @@
+﻿<Window x:Class="WpfSerwerTCP.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfSerwerTCP"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="469.896" Width="633.997">
+    <Grid>
+        <Label Content="Port nasłuchu:" HorizontalAlignment="Left" Margin="21,29,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.091,0.874" />
+        <TextBox x:Name="port" HorizontalAlignment="Left" Height="23" Margin="127,33,0,0" TextWrapping="Wrap"  VerticalAlignment="Top" Width="252" Text="7" RenderTransformOrigin="0.282,0.212" PreviewTextInput="PreviewTextInput" />
+        <Button x:Name="BT_Start" Content="Start" HorizontalAlignment="Left" Margin="449,32,0,0" VerticalAlignment="Top" Width="75" Click="BT_Start_Click"/>
+        <Button x:Name="BT_Stop" Content="Stop" HorizontalAlignment="Left" Margin="529,32,0,0" VerticalAlignment="Top" Width="75" Click="BT_Stop_Click"/>
+        <Label Content="Liczba klientów:" HorizontalAlignment="Left" Margin="21,81,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.158,0.513"/>
+        <TextBlock x:Name="messages" HorizontalAlignment="Left" Margin="21,149,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="197" Width="583"/>
+        <TextBlock x:Name="clients" HorizontalAlignment="Left" Margin="127,86,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+
+    </Grid>
+</Window>
