@@ -79,20 +79,6 @@ namespace WpfSerwerTCP
         {
             MainWindow.main.AddStatement(text);
         }
-
-
-        //    s.Listen(5);
-
-        //    int counter = 0;
-        //    for (; ; )
-        //    {
-        //        Socket cli = s.Accept();
-        //        clientList.Add(cli);
-        //        ClientServerTheard clientServerTheard = new ClientServerTheard(cli);
-        //        Thread thread = new Thread(clientServerTheard.Run);
-        //        thread.Start();
-        //    }
-        //}
     }
 }
 

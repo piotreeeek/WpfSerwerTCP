@@ -9,10 +9,11 @@ namespace WpfSerwerTCP
 {
     internal class ClientServerTheard
     {
+        const int BUFFER_SIZE = 1024;
         Socket clientSocket;
         bool running = true;
-        byte[] messageByte = new byte[1024];
-        string path = "D:/politechnika/semestr_7/sieciowe/przykladowe";
+        byte[] messageByte = new byte[BUFFER_SIZE];
+        string path = "D:\\politechnika\\semestr_7\\sieciowe\\przykladowe\\serwer";
 
         public ClientServerTheard(Socket s)
         {
@@ -30,6 +31,7 @@ namespace WpfSerwerTCP
                 {
                     int length = s.Receive(messageByte);
                     byte[] sendByte = new List<byte>(messageByte).GetRange(0, length).ToArray();
+                    //xx = messageByte.Clone() as byte[];
                     string message = Encoding.UTF8.GetString(sendByte);
                     if (message.Length == 0)
                     {
@@ -39,7 +41,6 @@ namespace WpfSerwerTCP
                     }
                     else if(message.ToUpper() == "LIST")
                     {
-                        s.Send(sendByte);
                         Console.WriteLine("Wiadomośc od klienta " + s.RemoteEndPoint.ToString() + " : " + message);
                         Serwer.AddStatement("Wiadomośc od klienta " + s.RemoteEndPoint.ToString() + " : " + message + "\n");
                         string[] entries = Directory.GetFiles(path, "*", SearchOption.TopDirectoryOnly);
@@ -50,33 +51,38 @@ namespace WpfSerwerTCP
                             list = list + Path.GetFileName(entry) + "\n";
 
                         }
-
+                        Byte[] listBytes = Encoding.UTF8.GetBytes(list);
+                        s.Send(listBytes);
                     }
-                    else if (message.Split(' ').First().ToUpper() == "SHOW")
+                    else if (message.Split(' ').First().ToUpper() == "GET")
                     {
-                        s.Send(sendByte);
                         Console.WriteLine("Wiadomośc od klienta " + s.RemoteEndPoint.ToString() + " : " + message);
                         Serwer.AddStatement("Wiadomośc od klienta " + s.RemoteEndPoint.ToString() + " : " + message + "\n");
-                        string fileName = message.Split(' ')[1];
+                        string fileName = path + "/" +  message.Split(' ')[1];
 
-                        if (File.Exists(path + "/" + fileName)) 
+                        if (File.Exists(fileName)) 
                         {
-                            byte[] fileBytes = File.ReadAllBytes(path + "/" + fileName);
-                            StringBuilder sb = new StringBuilder();
+                            byte[] buffer = null;
+                            FileStream fs = new FileStream(fileName, FileMode.Open);
+                            int bufferCount = Convert.ToInt32(Math.Ceiling((double)fs.Length / (double)BUFFER_SIZE));
+                            string headerStr = "Content-length:" + fs.Length.ToString() + "\r\nFilename:" + Path.GetFileName(fileName) + "\r\n";
+                            byte[] header = Encoding.UTF8.GetBytes(headerStr);
+                            s.Send(header);
 
-                            foreach (byte b in fileBytes)
+                            for (int i = 0; i < bufferCount; i++)
                             {
-                                sb.Append(Convert.ToString(b, 2).PadLeft(8, '0'));
+                                buffer = new byte[BUFFER_SIZE];
+                                int size = fs.Read(buffer, 0, BUFFER_SIZE);
+                                s.Send(buffer, size, SocketFlags.Partial);
+
                             }
-                            Console.WriteLine(sb);
+                            Console.WriteLine("wysłano");
                             //FileStream file = File.Open(path + fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
                         }
-
-                        string[] entries = Directory.GetFiles("D:/politechnika/semestr_7/sieciowe/przykladowe", "*", SearchOption.TopDirectoryOnly);
-                        foreach (string entry in entries)
+                        else
                         {
-                            Console.WriteLine(Path.GetFileName(entry));
-                            Console.WriteLine("dupa");
+                            Byte[] messageBytes = Encoding.UTF8.GetBytes("NO_FILE");
+                            s.Send(messageBytes);
                         }
                     }
                     else
